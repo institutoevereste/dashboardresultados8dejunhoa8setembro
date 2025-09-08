@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Seguidores - Instituto Evereste</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Fundo cinza claro */
+        }
+        .dashboard-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        .kpi-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .kpi-change {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .kpi-change.positive {
+            color: #10b981;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Cabeçalho -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Relatório Interativo de Seguidores</h1>
+            <p class="text-gray-500 mt-1">Análise da conta do Instituto Evereste no Instagram | Período: 10/06 a 07/09</p>
+        </header>
+
+        <!-- Métricas Principais (KPIs) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="dashboard-card">
+                <p class="kpi-label">Seguidores Atuais</p>
+                <p class="kpi-value">7.208</p>
+            </div>
+            <div class="dashboard-card">
+                <p class="kpi-label">Crescimento Líquido</p>
+                <p class="kpi-value">+1.924</p>
+                <p class="kpi-change positive">+35,7%</p>
+            </div>
+            <div class="dashboard-card">
+                <p class="kpi-label">Novos Seguidores vs. Unfollows</p>
+                <p class="kpi-value text-green-500">2.568</p>
+                <p class="kpi-value text-red-500 text-2xl -mt-2">644</p>
+            </div>
+            <div class="dashboard-card">
+                <p class="kpi-label">Taxa de Retenção</p>
+                <p class="kpi-value">74,9%</p>
+                <p class="text-sm text-gray-500">A cada 100 novos, 75 permanecem</p>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Gráfico 2: Publicações e Captação de Seguidores -->
+            <div class="dashboard-card">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Seguidores Conquistados por Campanha</h2>
+                <div class="chart-container">
+                    <canvas id="campaignsChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Gráfico 3: Análise de Retenção -->
+            <div class="dashboard-card">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Aquisição vs. Cancelamentos (Unfollows)</h2>
+                <div class="chart-container">
+                    <canvas id="retentionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conclusões e Recomendações -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div class="dashboard-card">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">✅ Conclusões (Crescimento Orgânico)</h2>
+                <ul class="space-y-3 list-inside list-disc text-gray-600">
+                    <li>O perfil cresceu <strong>+1.924 seguidores</strong> líquidos em 90 dias, fortalecendo a presença digital.</li>
+                    <li><strong>Eventos e campanhas sociais</strong> são os principais motores de crescimento e aquisição de novos seguidores.</li>
+                    <li>A alta taxa de retenção (<strong>75%</strong>) indica que o conteúdo é de alta qualidade e relevante para a audiência.</li>
+                    <li class="text-orange-600">⚠️ Publicações estáticas e puramente institucionais (logo, bandeira) têm baixa conversão e devem ser usadas de forma complementar.</li>
+                </ul>
+            </div>
+            <div class="dashboard-card">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">🚀 Recomendações Estratégicas</h2>
+                <ul class="space-y-3 list-inside list-disc text-gray-600">
+                    <li><strong>Investir mais</strong> em campanhas de eventos e de impacto social para maximizar a atração de seguidores.</li>
+                    <li><strong>Humanizar a marca</strong> mostrando mais pessoas, bastidores e contando histórias reais.</li>
+                    <li><strong>Reforçar a consistência</strong> nos formatos que já provaram ter bom resultado (vídeos, bastidores de eventos, etc.).</li>
+                    <li><strong>Monitorar cancelamentos</strong> para identificar conteúdos que geram perda de seguidores e ajustar a estratégia.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Seção de Tráfego Pago -->
+        <div class="mt-12">
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Análise de Tráfego Pago (Meta Ads)</h1>
+                <p class="text-gray-500 mt-1">Resultados das campanhas pagas no período de 08/06 a 08/09</p>
+            </header>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="dashboard-card">
+                    <p class="kpi-label">Valor Investido</p>
+                    <p class="kpi-value">R$5.716</p>
+                </div>
+                <div class="dashboard-card">
+                    <p class="kpi-label">Alcance Total</p>
+                    <p class="kpi-value">1M</p>
+                     <p class="text-sm text-gray-500">Pessoas alcançadas</p>
+                </div>
+                <div class="dashboard-card">
+                    <p class="kpi-label">Impressões</p>
+                    <p class="kpi-value">1,49M</p>
+                     <p class="text-sm text-gray-500">Vezes que os anúncios foram vistos</p>
+                </div>
+                <div class="dashboard-card">
+                    <p class="kpi-label">Cliques no Link</p>
+                    <p class="kpi-value">6.793</p>
+                </div>
+                 <div class="dashboard-card">
+                    <p class="kpi-label">Visitas ao Perfil do IG</p>
+                    <p class="kpi-value">2.165</p>
+                    <p class="text-sm text-gray-500">Principal resultado de campanha</p>
+                </div>
+                <div class="dashboard-card">
+                    <p class="kpi-label">CPC Médio (Custo por Clique)</p>
+                    <p class="kpi-value">R$0,84</p>
+                </div>
+                <div class="dashboard-card">
+                    <p class="kpi-label">CTR (Taxa de Cliques)</p>
+                    <p class="kpi-value">0,45%</p>
+                </div>
+                 <div class="dashboard-card">
+                    <p class="kpi-label">CPM Médio (Custo por Mil)</p>
+                    <p class="kpi-value">R$3,82</p>
+                </div>
+            </div>
+             <div class="dashboard-card">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">💡 Insights do Tráfego Pago</h2>
+                <ul class="space-y-3 list-inside list-disc text-gray-600">
+                    <li>O principal objetivo alcançado com as campanhas foi de <strong>Visitas ao Perfil do Instagram</strong>, indicando um foco em crescimento da base e reconhecimento da marca.</li>
+                    <li>O Custo por Clique (<strong>R$0,84</strong>) e o Custo por Mil Impressões (<strong>R$3,82</strong>) estão em valores competitivos, mostrando uma boa otimização dos anúncios.</li>
+                    <li>Não foram registadas conversões diretas de "Compras" ou "Leads", reforçando que a estratégia estava voltada para o topo do funil (alcance e engajamento).</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Dados para os gráficos
+        const campaignData = {
+            labels: ['Molda o Presente', 'Evereste no Mundo Geek', 'Entrevista Escada', 'Arena Games Evereste', 'Websérie Social EP01', 'Evereste pelo Brasil', 'Evereste Apresenta', 'Projeto Social Esporte', 'Bandeira (pessoa coberta)'],
+            values: [385, 314, 299, 199, 154, 57, 24, 17, 10]
+        };
+
+        // Configuração dos gráficos
+        const chartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    padding: 10,
+                    cornerRadius: 6,
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: '#e5e7eb'
+                    },
+                    ticks: { color: '#6b7280' }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: { 
+                        color: '#6b7280',
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 12
+                    }
+                }
+            }
+        };
+
+        // Renderizar Gráfico de Campanhas (Barras Horizontais)
+        const ctxCampaigns = document.getElementById('campaignsChart').getContext('2d');
+        new Chart(ctxCampaigns, {
+            type: 'bar',
+            data: {
+                labels: campaignData.labels,
+                datasets: [{
+                    label: 'Seguidores Conquistados',
+                    data: campaignData.values,
+                    backgroundColor: [
+                        '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe',
+                        '#dbeafe', '#eff6ff', '#eff6ff', '#eff6ff'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                ...chartOptions,
+                indexAxis: 'y',
+                 scales: {
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#374151' }
+                    },
+                    x: {
+                        grid: { color: '#e5e7eb' },
+                        ticks: { color: '#6b7280' }
+                    }
+                }
+            }
+        });
+        
+        // Renderizar Gráfico de Retenção (Barras e Linha)
+        const ctxRetention = document.getElementById('retentionChart').getContext('2d');
+        new Chart(ctxRetention, {
+            type: 'bar',
+            data: {
+                labels: ['10/Jun - 30/Jun', 'Julho', 'Agosto - 07/Set'],
+                datasets: [
+                    {
+                        label: 'Novos Seguidores',
+                        data: [1433, 573, 562], // Valores reais das imagens
+                        backgroundColor: '#10b981',
+                        borderRadius: 4,
+                        order: 2
+                    },
+                    {
+                        label: 'Cancelamentos',
+                        data: [131, 285, 228], // Valores reais das imagens
+                        backgroundColor: '#ef4444',
+                        borderRadius: 4,
+                        order: 2
+                    },
+                    {
+                        label: 'Crescimento Líquido',
+                        data: [1302, 288, 334], // Calculado: Novos - Cancelamentos
+                        type: 'line',
+                        borderColor: '#4f46e5',
+                        backgroundColor: '#4f46e5',
+                        tension: 0.3,
+                        fill: false,
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                ...chartOptions,
+                plugins: {
+                    legend: { display: true, position: 'top', labels: { color: '#374151' } }
+                },
+                 scales: {
+                    y: {
+                        grid: { color: '#e5e7eb' },
+                        ticks: { color: '#6b7280' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#374151' }
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
+
