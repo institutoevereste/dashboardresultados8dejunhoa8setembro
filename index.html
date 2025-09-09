@@ -118,6 +118,57 @@
                 </ul>
             </div>
         </div>
+        
+        <!-- ANÁLISE DE UNFOLLOWS -->
+        <div class="mt-12">
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Análise de Unfollows: O Efeito "Anime Jungle Party"</h1>
+                <p class="text-gray-500 mt-1">Compreendendo a origem e o comportamento da perda de seguidores.</p>
+            </header>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="dashboard-card lg:col-span-1">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Contexto da Parceria</h2>
+                     <p class="text-gray-600">
+                        Em junho, patrocinamos o evento <strong>Anime Jungle Party (AJP)</strong>. Esta ação estratégica, embora fora do nicho principal do instituto, visava aumentar a visibilidade da marca.
+                    </p>
+                    <ul class="mt-4 space-y-3 text-gray-600">
+                        <li><span class="font-bold text-blue-600 text-lg">+1.164 seguidores</span> foram adquiridos através da colaboração e de sorteios que incentivavam seguir os patrocinadores, todos provenientes do perfil do parceiro que na época das divulgação tinha cerca de 40k em seguidores no seu perfil do Instagram.</li>
+                         <li><span class="font-bold text-gray-700 text-lg">+269 seguidores</span> vieram de campanhas próprias do Evereste no mesmo período.</li>
+                    </ul>
+                     <p class="mt-4 text-sm text-gray-500 italic">Os dados que levam a conclusão desse estudo é que a alta taxa de unfollow nos meses seguintes se deve ao desalinhamento de interesses entre o público do evento e o conteúdo do Evereste.</p>
+                </div>
+                <div class="dashboard-card lg:col-span-2">
+                     <h2 class="text-xl font-semibold text-gray-700 mb-4">Picos de Unfollows Pós-Evento (>9 por dia)</h2>
+                     <div class="chart-container">
+                        <canvas id="unfollowChart"></canvas>
+                     </div>
+                </div>
+            </div>
+             <div class="dashboard-card mt-8">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">💡 Análise e Conclusões sobre a Perda</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <p class="kpi-label">Total de Unfollows em Dias de Pico</p>
+                        <p class="kpi-value text-red-500">330</p>
+                        <p class="text-sm text-gray-500">Em 24 dias analisados com mais de 9 unfollows/dia.</p>
+                    </div>
+                    <div>
+                        <p class="kpi-label">% da Perda vs. Seguidores do AJP</p>
+                        <p class="kpi-value text-red-500">28,3%</p>
+                        <p class="text-sm text-gray-500">Quase um terço dos seguidores vindos do evento deixou de seguir o perfil.</p>
+                    </div>
+                    <div>
+                        <p class="kpi-label">Impacto no Total de Perdas</p>
+                        <p class="kpi-value text-red-500">51,2%</p>
+                        <p class="text-sm text-gray-500">Os picos de unfollow representam mais da metade de todas as perdas do trimestre.</p>
+                    </div>
+                </div>
+                <div class="mt-6 border-t pt-4 text-gray-700">
+                     <p><strong>Conclusão:</strong> Os dados confirmam que a perda de seguidores está diretamente correlacionada ao público adquirido durante o AJP. A concentração de unfollows começou no dia do evento e continuou por semanas, sempre que um novo conteúdo (não relacionado ao universo do evento) era publicado. Embora a perda seja significativa, a estratégia resultou num ganho líquido e, mais importante, numa grande exposição da marca. A lição é que a aquisição de seguidores em massa fora do nicho tem um "custo" de retenção, que deve ser considerado em futuras parcerias.</p>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Seção de Tráfego Pago -->
         <div class="mt-12">
@@ -168,6 +219,7 @@
                 <ul class="space-y-3 list-inside list-disc text-gray-600">
                     <li>O principal objetivo alcançado com as campanhas foi de <strong>Visitas ao Perfil do Instagram</strong>, indicando um foco em crescimento da base e reconhecimento da marca.</li>
                     <li>O Custo por Clique (<strong>R$0,84</strong>) e o Custo por Mil Impressões (<strong>R$3,82</strong>) estão em valores competitivos, mostrando uma boa otimização dos anúncios.</li>
+                    <li>A campanha de maior destaque foi a <strong>"AFD MAIOR EVENTO"</strong>, responsável pela maior parte das visitas ao perfil.</li>
                     <li>Não foram registadas conversões diretas de "Compras" ou "Leads", reforçando que a estratégia estava voltada para o topo do funil (alcance e engajamento).</li>
                 </ul>
             </div>
@@ -178,8 +230,13 @@
     <script>
         // Dados para os gráficos
         const campaignData = {
-            labels: ['Molda o Presente', 'Evereste no Mundo Geek', 'Bastidores AJP', 'Arena Games Evereste', 'Websérie Social EP01', 'Evereste pelo Brasil', 'Evereste Apresenta', 'Projeto Social Esporte', 'Bandeira (pessoa coberta)'],
+            labels: ['Molda o Presente', 'Evereste no Mundo Geek', 'Entrevista Escada', 'Arena Games Evereste', 'Websérie Social EP01', 'Evereste pelo Brasil', 'Evereste Apresenta', 'Projeto Social Esporte', 'Bandeira (pessoa coberta)'],
             values: [385, 314, 299, 199, 154, 57, 24, 17, 10]
+        };
+        
+        const unfollowData = {
+            labels: ['28/jun', '29/jun', '30/jun', '1/jul', '2/jul', '3/jul', '4/jul', '5/jul', '6/jul', '15/jul', '21/jul', '19/ago'],
+            values: [14, 32, 27, 21, 11, 12, 13, 13, 14, 15, 11, 10] // Apenas os principais picos para visualização
         };
 
         // Configuração dos gráficos
@@ -201,7 +258,7 @@
             },
             scales: {
                 y: {
-                    beginAtZero: false,
+                    beginAtZero: true,
                     grid: {
                         color: '#e5e7eb'
                     },
@@ -306,8 +363,38 @@
             }
         });
 
+        // Renderizar Gráfico de Picos de Unfollow (Barras)
+        const ctxUnfollow = document.getElementById('unfollowChart').getContext('2d');
+        new Chart(ctxUnfollow, {
+            type: 'bar',
+            data: {
+                labels: unfollowData.labels,
+                datasets: [{
+                    label: 'Unfollows no dia',
+                    data: unfollowData.values,
+                    backgroundColor: '#ef4444',
+                    borderColor: '#ffffff',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                ...chartOptions,
+                 scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e5e7eb' },
+                        ticks: { color: '#6b7280' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#374151' }
+                    }
+                }
+            }
+        });
+
     </script>
 </body>
 </html>
-
 
