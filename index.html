@@ -312,8 +312,8 @@
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">💡 Insights do Tráfego Pago</h2>
                 <ul class="space-y-3 list-inside list-disc text-gray-600">
                     <li>O principal objetivo alcançado com as campanhas foi de <strong>Visitas ao Perfil do Instagram</strong>, indicando um foco em crescimento da base e reconhecimento da marca.</li>
-                    <li>O Custo por Clique (<strong>R$0,84</strong>) e o Custo por Mil Impressões (<strong>R$3,82</strong>) estão em valores competitivos, mostrando uma boa otimização dos anúncios.</li>
-                    <li>A campanha de maior destaque foi a <strong>"O MAIOR EVENTO (VÍDEO DE LANÇAMENTO AJP)"</strong>, responsável pela maior parte das visitas ao perfil.</li>
+                    <li>O Custo por Clique (<strong>R$0,84</strong>) e o Custo por Mil Impressões (<strong>R$3,82</strong>) são em valores competitivos, mostrando uma boa otimização dos anúncios.</li>
+                    <li>A campanha de maior destaque foi a <strong>"AFD MAIOR EVENTO"</strong>, responsável pela maior parte das visitas ao perfil.</li>
                     <li>Não foram registadas conversões diretas de "Compras" ou "Leads", reforçando que a estratégia estava voltada para o topo do funil (alcance e engajamento).</li>
                 </ul>
             </div>
@@ -322,13 +322,19 @@
         <!-- INSIGHTS COM IA ✨ -->
         <div class="dashboard-card mt-12">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Análise Final com IA ✨</h2>
-            <p class="text-gray-600 mb-6">Obtenha um resumo executivo de todo o relatório, consolidando os principais insights de crescimento, retenção e tráfego pago com a ajuda da IA.</p>
+            <p class="text-gray-600 mb-4">Para utilizar esta funcionalidade no GitHub, precisa de uma chave da API Gemini. Obtenha a sua gratuitamente no <a href="https://aistudio.google.com/" target="_blank" class="text-indigo-600 hover:underline">Google AI Studio</a> e cole-a abaixo.</p>
+            
+            <div class="mb-4">
+                <input type="password" id="apiKeyInput" placeholder="Cole a sua chave da API Gemini aqui" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
             <div class="flex justify-center">
-                <button id="generateSummaryBtn" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center">
+                <button id="generateSummaryBtn" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center disabled:bg-gray-400" disabled>
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Gerar Resumo Executivo Completo
                 </button>
             </div>
+             <p id="apiKeyError" class="text-red-500 text-sm mt-2 text-center hidden">Por favor, insira uma chave de API válida.</p>
         </div>
 
     </div>
@@ -353,18 +359,34 @@
         // --- INÍCIO DA LÓGICA DA GEMINI API ---
 
         const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const apiKeyError = document.getElementById('apiKeyError');
         const aiModal = document.getElementById('aiModal');
         const aiModalTitle = document.getElementById('aiModalTitle');
         const aiModalBody = document.getElementById('aiModalBody');
         const closeModalBtn = document.getElementById('closeModalBtn');
 
+        apiKeyInput.addEventListener('input', () => {
+            if (apiKeyInput.value.trim() !== '') {
+                generateSummaryBtn.disabled = false;
+                apiKeyError.classList.add('hidden');
+            } else {
+                generateSummaryBtn.disabled = true;
+            }
+        });
+
         // Função para chamar a API Gemini
         async function callGeminiAPI(prompt, title) {
+            const apiKey = apiKeyInput.value.trim();
+            if (apiKey === '') {
+                apiKeyError.classList.remove('hidden');
+                return;
+            }
+
             aiModalTitle.textContent = title;
             aiModalBody.innerHTML = `<div class="flex justify-center items-center h-48"><div class="spinner"></div></div>`;
             aiModal.classList.add('visible');
 
-            const apiKey = ""; // A chave será fornecida pelo ambiente de execução
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
             try {
@@ -392,7 +414,7 @@
 
             } catch (error) {
                 console.error("Erro ao chamar a API Gemini:", error);
-                aiModalBody.innerHTML = `<p class="text-red-500">Ocorreu um erro ao gerar a resposta. Por favor, tente novamente mais tarde.</p>`;
+                aiModalBody.innerHTML = `<p class="text-red-500">Ocorreu um erro ao gerar a resposta. Verifique se a sua chave de API é válida e tente novamente.</p>`;
             }
         }
 
