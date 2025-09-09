@@ -45,52 +45,6 @@
             height: 350px;
             width: 100%;
         }
-        /* Estilos para o Modal da IA */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: scale(0.95);
-            transition: transform 0.3s;
-        }
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
-        }
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: #4f46e5;
-            animation: spin 1s ease infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -229,7 +183,7 @@
             <!-- NOVA SESSÃO: SÉRIE TEMPORAL E PREVISÃO -->
             <div class="dashboard-card mt-8">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">📈 Análise de Série Temporal e Previsão de Perda (AJP)</h2>
-                <p class="text-gray-600 mb-6">A análise temporal dos picos de unfollow mostra uma clara **tendência de queda exponencial**. A maior parte das perdas ocorreu nas 4 semanas seguintes ao evento, diminuindo progressivamente em agosto e setembro. Com base nesta curva de decaimento, podemos projetar a perda residual para os próximos 3 meses.</p>
+                <p class="text-gray-600 mb-6">A análise temporal dos picos de unfollow mostra uma queda exponencial. A maior parte das perdas ocorreu nas 4 semanas seguintes ao evento, diminuindo progressivamente em agosto e setembro. Com base nesta curva de decaimento, podemos projetar a perda residual para os próximos 3 meses.</p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                     <div class="border rounded-lg p-4">
@@ -312,164 +266,15 @@
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">💡 Insights do Tráfego Pago</h2>
                 <ul class="space-y-3 list-inside list-disc text-gray-600">
                     <li>O principal objetivo alcançado com as campanhas foi de <strong>Visitas ao Perfil do Instagram</strong>, indicando um foco em crescimento da base e reconhecimento da marca.</li>
-                    <li>O Custo por Clique (<strong>R$0,84</strong>) e o Custo por Mil Impressões (<strong>R$3,82</strong>) são em valores competitivos, mostrando uma boa otimização dos anúncios.</li>
+                    <li>O Custo por Clique (<strong>R$0,84</strong>) e o Custo por Mil Impressões (<strong>$3,82</strong>) estão em valores competitivos, mostrando uma boa otimização dos anúncios.</li>
                     <li>A campanha de maior destaque foi a <strong>"AFD MAIOR EVENTO"</strong>, responsável pela maior parte das visitas ao perfil.</li>
                     <li>Não foram registadas conversões diretas de "Compras" ou "Leads", reforçando que a estratégia estava voltada para o topo do funil (alcance e engajamento).</li>
                 </ul>
             </div>
         </div>
-        
-        <!-- INSIGHTS COM IA ✨ -->
-        <div class="dashboard-card mt-12">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Análise Final com IA ✨</h2>
-            <p class="text-gray-600 mb-4">Para utilizar esta funcionalidade no GitHub, precisa de uma chave da API Gemini. Obtenha a sua gratuitamente no <a href="https://aistudio.google.com/" target="_blank" class="text-indigo-600 hover:underline">Google AI Studio</a> e cole-a abaixo.</p>
-            
-            <div class="mb-4">
-                <input type="password" id="apiKeyInput" placeholder="Cole a sua chave da API Gemini aqui" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-
-            <div class="flex justify-center">
-                <button id="generateSummaryBtn" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center disabled:bg-gray-400" disabled>
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    Gerar Resumo Executivo Completo
-                </button>
-            </div>
-             <p id="apiKeyError" class="text-red-500 text-sm mt-2 text-center hidden">Por favor, insira uma chave de API válida.</p>
-        </div>
-
     </div>
-
-    <!-- Modal para Respostas da IA -->
-    <div id="aiModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="aiModalTitle" class="text-2xl font-bold text-gray-800"></h2>
-                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800">&times;</button>
-            </div>
-            <div id="aiModalBody">
-                <div class="flex justify-center items-center h-48">
-                    <div class="spinner"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <script>
-        // --- INÍCIO DA LÓGICA DA GEMINI API ---
-
-        const generateSummaryBtn = document.getElementById('generateSummaryBtn');
-        const apiKeyInput = document.getElementById('apiKeyInput');
-        const apiKeyError = document.getElementById('apiKeyError');
-        const aiModal = document.getElementById('aiModal');
-        const aiModalTitle = document.getElementById('aiModalTitle');
-        const aiModalBody = document.getElementById('aiModalBody');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-
-        apiKeyInput.addEventListener('input', () => {
-            if (apiKeyInput.value.trim() !== '') {
-                generateSummaryBtn.disabled = false;
-                apiKeyError.classList.add('hidden');
-            } else {
-                generateSummaryBtn.disabled = true;
-            }
-        });
-
-        // Função para chamar a API Gemini
-        async function callGeminiAPI(prompt, title) {
-            const apiKey = apiKeyInput.value.trim();
-            if (apiKey === '') {
-                apiKeyError.classList.remove('hidden');
-                return;
-            }
-
-            aiModalTitle.textContent = title;
-            aiModalBody.innerHTML = `<div class="flex justify-center items-center h-48"><div class="spinner"></div></div>`;
-            aiModal.classList.add('visible');
-
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (text) {
-                    const formattedText = text
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\n/g, '<br>');
-                    aiModalBody.innerHTML = `<div class="text-gray-700 space-y-4">${formattedText}</div>`;
-                } else {
-                    throw new Error("Resposta da API inválida ou vazia.");
-                }
-
-            } catch (error) {
-                console.error("Erro ao chamar a API Gemini:", error);
-                aiModalBody.innerHTML = `<p class="text-red-500">Ocorreu um erro ao gerar a resposta. Verifique se a sua chave de API é válida e tente novamente.</p>`;
-            }
-        }
-
-        // Event listener para o botão de Resumo Executivo
-        generateSummaryBtn.addEventListener('click', () => {
-            const crescimentoLiquido = document.querySelector('#kpi-crescimento .kpi-value').textContent.trim();
-            const crescimentoPercentual = document.querySelector('#kpi-crescimento .kpi-change').textContent.trim();
-            const retencaoMedia = document.querySelector('#kpi-retencao .kpi-value').textContent.trim();
-            const melhoresCampanhas = campaignData.labels.slice(0, 3).join(', ');
-            
-            const investimentoPago = document.querySelector('#kpi-investimento .kpi-value').textContent.trim();
-            const alcancePago = document.querySelector('#kpi-alcance-pago .kpi-value').textContent.trim();
-            const visitasAoPerfilPago = document.querySelector('#kpi-visitas-pago .kpi-value').textContent.trim();
-            const cpcPago = document.querySelector('#kpi-cpc .kpi-value').textContent.trim();
-            const cpmPago = document.querySelector('#kpi-cpm .kpi-value').textContent.trim();
-
-
-            const prompt = `
-                Aja como um analista de marketing de dados sénior.
-                Estou a analisar o desempenho de um perfil de Instagram para uma organização chamada 'Evereste' no último trimestre. Seguem os dados consolidados de todas as secções do dashboard:
-
-                **1. Performance Orgânica:**
-                - Crescimento Líquido: ${crescimentoLiquido} seguidores
-                - Crescimento Percentual: ${crescimentoPercentual}
-                - Taxa de Retenção Média: ${retencaoMedia}
-                - Campanhas de maior sucesso: ${melhoresCampanhas}.
-
-                **2. Análise de Churn (Perda):**
-                - Principal Causa: Parceria com o evento 'Anime Jungle Party' (AJP), que trouxe 1.164 seguidores de um nicho diferente.
-                - Impacto: Resultou numa perda concentrada de 325 seguidores em dias de pico, representando 27,9% dos seguidores vindos do evento e 50,4% do churn total do trimestre.
-
-                **3. Desempenho de Mídia Paga:**
-                - Investimento: ${investimentoPago}
-                - Alcance Total: ${alcancePago}
-                - Resultado Primário: ${visitasAoPerfilPago} Visitas ao Perfil
-                - KPIs de Eficiência: CPC de ${cpcPago} e CPM de ${cpmPago}.
-
-                Com base em TODOS estes dados, escreva um resumo executivo completo em português de Portugal. Estruture o resumo em secções claras: 1. Análise Geral do Crescimento. 2. Diagnóstico da Retenção e Churn. 3. Performance de Mídia Paga. 4. Recomendações Estratégicas Chave. Seja conciso e focado em insights acionáveis.
-            `;
-            callGeminiAPI(prompt, "Resumo Executivo Completo Gerado por IA");
-        });
-
-        // Fechar o modal
-        closeModalBtn.addEventListener('click', () => {
-            aiModal.classList.remove('visible');
-        });
-        aiModal.addEventListener('click', (e) => {
-            if (e.target === aiModal) {
-                aiModal.classList.remove('visible');
-            }
-        });
-
-        // --- FIM DA LÓGICA DA GEMINI API ---
-
-
         // Dados para os gráficos
         const campaignData = {
             labels: ['Molda o Presente', 'Evereste no Mundo Geek', 'Entrevista Escada', 'Arena Games Evereste', 'Websérie Social EP01', 'Evereste pelo Brasil', 'Evereste Apresenta', 'Projeto Social Esporte', 'Bandeira (pessoa coberta)'],
@@ -653,4 +458,3 @@
     </script>
 </body>
 </html>
-
