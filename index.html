@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Seguidores - Instituto Evereste</title>
+    <title>Dashboard de Seguidores - Evereste</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -45,6 +45,52 @@
             height: 350px;
             width: 100%;
         }
+        /* Estilos para o Modal da IA */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4f46e5;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -52,27 +98,27 @@
         <!-- Cabeçalho -->
         <header class="mb-8">
             <h1 class="text-3xl font-bold text-gray-800">Relatório Interativo de Seguidores</h1>
-            <p class="text-gray-500 mt-1">Análise da conta do Instituto Evereste no Instagram | Período: 10/06 a 07/09</p>
+            <p class="text-gray-500 mt-1">Análise da conta do Evereste no Instagram | Período: 10/06 a 07/09</p>
         </header>
 
         <!-- Métricas Principais (KPIs) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="dashboard-card">
+            <div id="kpi-seguidores" class="dashboard-card">
                 <p class="kpi-label">Seguidores Atuais</p>
                 <p class="kpi-value">7.208</p>
             </div>
-            <div class="dashboard-card">
+            <div id="kpi-crescimento" class="dashboard-card">
                 <p class="kpi-label">Crescimento Líquido</p>
                 <p class="kpi-value">+1.924</p>
                 <p class="kpi-change positive">+35,7%</p>
             </div>
-            <div class="dashboard-card">
+            <div id="kpi-aquisicao" class="dashboard-card">
                 <p class="kpi-label">Novos Seguidores vs. Unfollows</p>
                 <p class="kpi-value text-green-500">2.568</p>
                 <p class="kpi-value text-red-500 text-2xl -mt-2">644</p>
             </div>
-            <div class="dashboard-card">
-                <p class="kpi-label">Taxa de Retenção</p>
+            <div id="kpi-retencao" class="dashboard-card">
+                <p class="kpi-label">Taxa de Retenção Média</p>
                 <p class="kpi-value">74,9%</p>
                 <p class="text-sm text-gray-500">A cada 100 novos, 75 permanecem</p>
             </div>
@@ -80,7 +126,6 @@
 
         <!-- Gráficos -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Gráfico 2: Publicações e Captação de Seguidores -->
             <div class="dashboard-card">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Seguidores Conquistados por Campanha</h2>
                 <div class="chart-container">
@@ -88,10 +133,23 @@
                 </div>
             </div>
             
-            <!-- Gráfico 3: Análise de Retenção -->
             <div class="dashboard-card">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Aquisição vs. Cancelamentos (Unfollows)</h2>
-                <div class="chart-container">
+                <h2 class="text-xl font-semibold text-gray-700 mb-1">Aquisição vs. Cancelamentos (Unfollows)</h2>
+                <div class="flex justify-around text-xs text-gray-500 mb-3 text-center">
+                    <div>
+                        <p class="font-semibold text-green-600">Junho</p>
+                        <p>90.9% Retenção</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-orange-500">Julho</p>
+                        <p>50.3% Retenção</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-blue-600">Ago/Set</p>
+                        <p>59.4% Retenção</p>
+                    </div>
+                </div>
+                <div class="chart-container" style="height: 310px;">
                     <canvas id="retentionChart"></canvas>
                 </div>
             </div>
@@ -104,7 +162,7 @@
                 <ul class="space-y-3 list-inside list-disc text-gray-600">
                     <li>O perfil cresceu <strong>+1.924 seguidores</strong> líquidos em 90 dias, fortalecendo a presença digital.</li>
                     <li><strong>Eventos e campanhas sociais</strong> são os principais motores de crescimento e aquisição de novos seguidores.</li>
-                    <li>A alta taxa de retenção (<strong>75%</strong>) indica que o conteúdo é de alta qualidade e relevante para a audiência.</li>
+                    <li>A alta taxa de retenção média (<strong>75%</strong>) indica que o conteúdo é de alta qualidade, apesar da volatilidade causada pelo evento AJP.</li>
                     <li class="text-orange-600">⚠️ Publicações estáticas e puramente institucionais (logo, bandeira) têm baixa conversão e devem ser usadas de forma complementar.</li>
                 </ul>
             </div>
@@ -129,13 +187,13 @@
                 <div class="dashboard-card lg:col-span-1">
                     <h2 class="text-xl font-semibold text-gray-700 mb-4">Contexto da Parceria</h2>
                      <p class="text-gray-600">
-                        Em junho, patrocinamos o evento <strong>Anime Jungle Party (AJP)</strong>. Esta ação estratégica, embora fora do nicho principal do instituto, visava aumentar a visibilidade da marca.
+                        Em junho, o Evereste patrocinou o evento <strong>Anime Jungle Party (AJP)</strong>. Esta ação estratégica, embora fora do nicho principal, visava aumentar a visibilidade da marca.
                     </p>
                     <ul class="mt-4 space-y-3 text-gray-600">
-                        <li><span class="font-bold text-blue-600 text-lg">+1.164 seguidores</span> foram adquiridos através da colaboração e de sorteios que incentivavam seguir os patrocinadores, todos provenientes do perfil do parceiro que na época das divulgação tinha cerca de 40k em seguidores no seu perfil do Instagram.</li>
+                        <li><span class="font-bold text-blue-600 text-lg">+1.164 seguidores</span> foram adquiridos através da colaboração e de sorteios que incentivavam seguir os patrocinadores.</li>
                          <li><span class="font-bold text-gray-700 text-lg">+269 seguidores</span> vieram de campanhas próprias do Evereste no mesmo período.</li>
                     </ul>
-                     <p class="mt-4 text-sm text-gray-500 italic">Os dados que levam a conclusão desse estudo é que a alta taxa de unfollow nos meses seguintes se deve ao desalinhamento de interesses entre o público do evento e o conteúdo do Evereste.</p>
+                     <p class="mt-4 text-sm text-gray-500 italic">O estudo da perda de seguidores concluiu que a alta taxa de unfollow nos meses seguintes se deve ao desalinhamento de interesses entre o público do evento e o conteúdo institucional do Evereste.</p>
                 </div>
                 <div class="dashboard-card lg:col-span-2">
                      <h2 class="text-xl font-semibold text-gray-700 mb-4">Picos de Unfollows Pós-Evento (>9 por dia)</h2>
@@ -149,22 +207,58 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <p class="kpi-label">Total de Unfollows em Dias de Pico</p>
-                        <p class="kpi-value text-red-500">330</p>
-                        <p class="text-sm text-gray-500">Em 24 dias analisados com mais de 9 unfollows/dia.</p>
+                        <p class="kpi-value text-red-500">325</p>
+                        <p class="text-sm text-gray-500">Em 24 dias analisados com mais de 9 unfollows.</p>
                     </div>
                     <div>
                         <p class="kpi-label">% da Perda vs. Seguidores do AJP</p>
-                        <p class="kpi-value text-red-500">28,3%</p>
+                        <p class="kpi-value text-red-500">27,9%</p>
                         <p class="text-sm text-gray-500">Quase um terço dos seguidores vindos do evento deixou de seguir o perfil.</p>
                     </div>
                     <div>
                         <p class="kpi-label">Impacto no Total de Perdas</p>
-                        <p class="kpi-value text-red-500">51,2%</p>
+                        <p class="kpi-value text-red-500">50,4%</p>
                         <p class="text-sm text-gray-500">Os picos de unfollow representam mais da metade de todas as perdas do trimestre.</p>
                     </div>
                 </div>
                 <div class="mt-6 border-t pt-4 text-gray-700">
-                     <p><strong>Conclusão:</strong> Os dados confirmam que a perda de seguidores está diretamente correlacionada ao público adquirido durante o AJP. A concentração de unfollows começou no dia do evento e continuou por semanas, sempre que um novo conteúdo (não relacionado ao universo do evento) era publicado. Embora a perda seja significativa, a estratégia resultou num ganho líquido e, mais importante, numa grande exposição da marca. A lição é que a aquisição de seguidores em massa fora do nicho tem um "custo" de retenção, que deve ser considerado em futuras parcerias.</p>
+                     <p><strong>Conclusão:</strong> O estudo comprova a correlação direta entre a perda de seguidores e o público adquirido durante o AJP. A concentração de unfollows começou no dia do evento e continuou por semanas, sempre que um novo conteúdo (não relacionado ao universo do evento) era publicado. Embora a perda seja significativa, a estratégia resultou num ganho líquido e, mais importante, numa grande exposição da marca. A lição é que a aquisição de seguidores em massa fora do nicho tem um "custo" de retenção, que deve ser considerado em futuras parcerias.</p>
+                </div>
+            </div>
+
+            <!-- NOVA SESSÃO: SÉRIE TEMPORAL E PREVISÃO -->
+            <div class="dashboard-card mt-8">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">📈 Análise de Série Temporal e Previsão de Perda (AJP)</h2>
+                <p class="text-gray-600 mb-6">A análise temporal dos picos de unfollow mostra uma clara **tendência de queda exponencial**. A maior parte das perdas ocorreu nas 4 semanas seguintes ao evento, diminuindo progressivamente em agosto e setembro. Com base nesta curva de decaimento, podemos projetar a perda residual para os próximos 3 meses.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="border rounded-lg p-4">
+                        <p class="kpi-label">Previsão para Outubro</p>
+                        <p class="kpi-value text-orange-500">~8-10%</p>
+                        <p class="text-sm text-gray-500">De perda adicional sobre o restante da base de seguidores vinda do AJP.</p>
+                    </div>
+                    <div class="border rounded-lg p-4">
+                        <p class="kpi-label">Previsão para Novembro</p>
+                        <p class="kpi-value text-orange-500">~4-5%</p>
+                        <p class="text-sm text-gray-500">A taxa de perda continua a desacelerar, indicando estabilização.</p>
+                    </div>
+                    <div class="border rounded-lg p-4">
+                        <p class="kpi-label">Previsão para Dezembro</p>
+                        <p class="kpi-value text-orange-500">~2-3%</p>
+                        <p class="text-sm text-gray-500">A perda se torna residual, aproximando-se da taxa de <span class="font-semibold">churn orgânica (perda natural de seguidores)</span> do perfil.</p>
+                    </div>
+                </div>
+                 <div class="mt-6 border-t pt-4 text-gray-700">
+                     <p><strong>Conclusão da Previsão:</strong> A "limpeza" da base de seguidores adquirida no evento AJP deve estar perto do fim. Após dezembro, espera-se que os seguidores remanescentes desta campanha tenham um interesse genuíno no conteúdo do Evereste, e a taxa de unfollow geral do perfil deve normalizar para níveis orgânicos mais baixos e estáveis.</p>
+                </div>
+                <div class="mt-6 border-t pt-4">
+                    <h3 class="font-semibold text-gray-700 mb-2">Entendendo a Diferença: Churn do Evento vs. Churn Orgânico</h3>
+                    <p class="text-sm text-gray-600">
+                        <strong class="text-red-500">Churn do Evento (AJP):</strong> É uma perda <strong>anormal e concentrada</strong>, causada por atrair um público de um nicho diferente, que se desinteressa rapidamente.
+                    </p>
+                    <p class="text-sm text-gray-600 mt-1">
+                        <strong class="text-green-500">Churn Orgânico (Perda Natural):</strong> É uma perda <strong>pequena e constante</strong> que ocorre naturalmente no dia a dia, por motivos como mudança de interesse dos seguidores. É a "saída" normal e saudável de qualquer perfil.
+                    </p>
                 </div>
             </div>
         </div>
@@ -178,11 +272,11 @@
             </header>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="dashboard-card">
+                <div id="kpi-investimento" class="dashboard-card">
                     <p class="kpi-label">Valor Investido</p>
                     <p class="kpi-value">R$5.716</p>
                 </div>
-                <div class="dashboard-card">
+                <div id="kpi-alcance-pago" class="dashboard-card">
                     <p class="kpi-label">Alcance Total</p>
                     <p class="kpi-value">1M</p>
                      <p class="text-sm text-gray-500">Pessoas alcançadas</p>
@@ -196,12 +290,12 @@
                     <p class="kpi-label">Cliques no Link</p>
                     <p class="kpi-value">6.793</p>
                 </div>
-                 <div class="dashboard-card">
+                 <div id="kpi-visitas-pago" class="dashboard-card">
                     <p class="kpi-label">Visitas ao Perfil do IG</p>
                     <p class="kpi-value">2.165</p>
                     <p class="text-sm text-gray-500">Principal resultado de campanha</p>
                 </div>
-                <div class="dashboard-card">
+                <div id="kpi-cpc" class="dashboard-card">
                     <p class="kpi-label">CPC Médio (Custo por Clique)</p>
                     <p class="kpi-value">R$0,84</p>
                 </div>
@@ -209,7 +303,7 @@
                     <p class="kpi-label">CTR (Taxa de Cliques)</p>
                     <p class="kpi-value">0,45%</p>
                 </div>
-                 <div class="dashboard-card">
+                 <div id="kpi-cpm" class="dashboard-card">
                     <p class="kpi-label">CPM Médio (Custo por Mil)</p>
                     <p class="kpi-value">R$3,82</p>
                 </div>
@@ -219,15 +313,141 @@
                 <ul class="space-y-3 list-inside list-disc text-gray-600">
                     <li>O principal objetivo alcançado com as campanhas foi de <strong>Visitas ao Perfil do Instagram</strong>, indicando um foco em crescimento da base e reconhecimento da marca.</li>
                     <li>O Custo por Clique (<strong>R$0,84</strong>) e o Custo por Mil Impressões (<strong>R$3,82</strong>) estão em valores competitivos, mostrando uma boa otimização dos anúncios.</li>
-                    <li>A campanha de maior destaque foi a <strong>"AFD MAIOR EVENTO"</strong>, responsável pela maior parte das visitas ao perfil.</li>
+                    <li>A campanha de maior destaque foi a <strong>"O MAIOR EVENTO (VÍDEO DE LANÇAMENTO AJP)"</strong>, responsável pela maior parte das visitas ao perfil.</li>
                     <li>Não foram registadas conversões diretas de "Compras" ou "Leads", reforçando que a estratégia estava voltada para o topo do funil (alcance e engajamento).</li>
                 </ul>
+            </div>
+        </div>
+        
+        <!-- INSIGHTS COM IA ✨ -->
+        <div class="dashboard-card mt-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Análise Final com IA ✨</h2>
+            <p class="text-gray-600 mb-6">Obtenha um resumo executivo de todo o relatório, consolidando os principais insights de crescimento, retenção e tráfego pago com a ajuda da IA.</p>
+            <div class="flex justify-center">
+                <button id="generateSummaryBtn" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Gerar Resumo Executivo Completo
+                </button>
             </div>
         </div>
 
     </div>
 
+    <!-- Modal para Respostas da IA -->
+    <div id="aiModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="aiModalTitle" class="text-2xl font-bold text-gray-800"></h2>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="aiModalBody">
+                <div class="flex justify-center items-center h-48">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script>
+        // --- INÍCIO DA LÓGICA DA GEMINI API ---
+
+        const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+        const aiModal = document.getElementById('aiModal');
+        const aiModalTitle = document.getElementById('aiModalTitle');
+        const aiModalBody = document.getElementById('aiModalBody');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        // Função para chamar a API Gemini
+        async function callGeminiAPI(prompt, title) {
+            aiModalTitle.textContent = title;
+            aiModalBody.innerHTML = `<div class="flex justify-center items-center h-48"><div class="spinner"></div></div>`;
+            aiModal.classList.add('visible');
+
+            const apiKey = ""; // A chave será fornecida pelo ambiente de execução
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (text) {
+                    const formattedText = text
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\n/g, '<br>');
+                    aiModalBody.innerHTML = `<div class="text-gray-700 space-y-4">${formattedText}</div>`;
+                } else {
+                    throw new Error("Resposta da API inválida ou vazia.");
+                }
+
+            } catch (error) {
+                console.error("Erro ao chamar a API Gemini:", error);
+                aiModalBody.innerHTML = `<p class="text-red-500">Ocorreu um erro ao gerar a resposta. Por favor, tente novamente mais tarde.</p>`;
+            }
+        }
+
+        // Event listener para o botão de Resumo Executivo
+        generateSummaryBtn.addEventListener('click', () => {
+            const crescimentoLiquido = document.querySelector('#kpi-crescimento .kpi-value').textContent.trim();
+            const crescimentoPercentual = document.querySelector('#kpi-crescimento .kpi-change').textContent.trim();
+            const retencaoMedia = document.querySelector('#kpi-retencao .kpi-value').textContent.trim();
+            const melhoresCampanhas = campaignData.labels.slice(0, 3).join(', ');
+            
+            const investimentoPago = document.querySelector('#kpi-investimento .kpi-value').textContent.trim();
+            const alcancePago = document.querySelector('#kpi-alcance-pago .kpi-value').textContent.trim();
+            const visitasAoPerfilPago = document.querySelector('#kpi-visitas-pago .kpi-value').textContent.trim();
+            const cpcPago = document.querySelector('#kpi-cpc .kpi-value').textContent.trim();
+            const cpmPago = document.querySelector('#kpi-cpm .kpi-value').textContent.trim();
+
+
+            const prompt = `
+                Aja como um analista de marketing de dados sénior.
+                Estou a analisar o desempenho de um perfil de Instagram para uma organização chamada 'Evereste' no último trimestre. Seguem os dados consolidados de todas as secções do dashboard:
+
+                **1. Performance Orgânica:**
+                - Crescimento Líquido: ${crescimentoLiquido} seguidores
+                - Crescimento Percentual: ${crescimentoPercentual}
+                - Taxa de Retenção Média: ${retencaoMedia}
+                - Campanhas de maior sucesso: ${melhoresCampanhas}.
+
+                **2. Análise de Churn (Perda):**
+                - Principal Causa: Parceria com o evento 'Anime Jungle Party' (AJP), que trouxe 1.164 seguidores de um nicho diferente.
+                - Impacto: Resultou numa perda concentrada de 325 seguidores em dias de pico, representando 27,9% dos seguidores vindos do evento e 50,4% do churn total do trimestre.
+
+                **3. Desempenho de Mídia Paga:**
+                - Investimento: ${investimentoPago}
+                - Alcance Total: ${alcancePago}
+                - Resultado Primário: ${visitasAoPerfilPago} Visitas ao Perfil
+                - KPIs de Eficiência: CPC de ${cpcPago} e CPM de ${cpmPago}.
+
+                Com base em TODOS estes dados, escreva um resumo executivo completo em português de Portugal. Estruture o resumo em secções claras: 1. Análise Geral do Crescimento. 2. Diagnóstico da Retenção e Churn. 3. Performance de Mídia Paga. 4. Recomendações Estratégicas Chave. Seja conciso e focado em insights acionáveis.
+            `;
+            callGeminiAPI(prompt, "Resumo Executivo Completo Gerado por IA");
+        });
+
+        // Fechar o modal
+        closeModalBtn.addEventListener('click', () => {
+            aiModal.classList.remove('visible');
+        });
+        aiModal.addEventListener('click', (e) => {
+            if (e.target === aiModal) {
+                aiModal.classList.remove('visible');
+            }
+        });
+
+        // --- FIM DA LÓGICA DA GEMINI API ---
+
+
         // Dados para os gráficos
         const campaignData = {
             labels: ['Molda o Presente', 'Evereste no Mundo Geek', 'Entrevista Escada', 'Arena Games Evereste', 'Websérie Social EP01', 'Evereste pelo Brasil', 'Evereste Apresenta', 'Projeto Social Esporte', 'Bandeira (pessoa coberta)'],
@@ -235,8 +455,17 @@
         };
         
         const unfollowData = {
-            labels: ['28/jun', '29/jun', '30/jun', '1/jul', '2/jul', '3/jul', '4/jul', '5/jul', '6/jul', '15/jul', '21/jul', '19/ago'],
-            values: [14, 32, 27, 21, 11, 12, 13, 13, 14, 15, 11, 10] // Apenas os principais picos para visualização
+            labels: [
+                '28/jun (Evento Dia 1)', '29/jun (Evento Dia 2)', '30/jun (Pós-evento)',
+                '1/jul', '2/jul (Vídeo Dacota)', '3/jul', '4/jul (Carrossel Lei do Bem)',
+                '5/jul', '6/jul', '9/jul', '10/jul', '11/jul',
+                '15/jul (Fotos Treinamento)', '16/jul', '21/jul (Card EV Nordeste)',
+                '23/jul (Vídeo Locais)', '24/jul', '27/jul', '7/ago',
+                '12/ago', '17/ago', '18/ago', '19/ago (Teaser Websérie)', '7/set'
+            ],
+            values: [
+                14, 32, 27, 21, 11, 12, 13, 13, 14, 9, 10, 10, 15, 10, 11, 10, 9, 9, 10, 9, 10, 10, 10, 10
+            ]
         };
 
         // Configuração dos gráficos
@@ -388,7 +617,12 @@
                     },
                     x: {
                         grid: { display: false },
-                        ticks: { color: '#374151' }
+                        ticks: { 
+                            color: '#374151',
+                            autoSkip: false, // Garante que todos os rótulos sejam exibidos
+                            maxRotation: 90, // Rotaciona os rótulos para evitar sobreposição
+                            minRotation: 45
+                        }
                     }
                 }
             }
